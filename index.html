@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac</title>
+  <link rel="icon" href="logo.png" type="image/x-icon">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container text-center mt-5 mx-auto">
+  <h1>Tic Tac Toe</h1>
+  <p id="turn-indicator">Player 1's Turn (X)</p>
+
+  <div class="row justify-content-center">
+    <div id="game-board" class="col-12 col-md-6">
+      <div class="row">
+        <div class="col-4 box" data-index="0"></div>
+        <div class="col-4 box" data-index="1"></div>
+        <div class="col-4 box" data-index="2"></div>
+      </div>
+      <div class="row">
+        <div class="col-4 box" data-index="3"></div>
+        <div class="col-4 box" data-index="4"></div>
+        <div class="col-4 box" data-index="5"></div>
+      </div>
+      <div class="row">
+        <div class="col-4 box" data-index="6"></div>
+        <div class="col-4 box" data-index="7"></div>
+        <div class="col-4 box" data-index="8"></div>
+      </div>
+    </div>
+  </div>
+
+  <button id="reset-btn" class="btn btn-primary mt-4">Reset Game</button>
+
+</div>
+<!-- Inside the body section -->
+
+<div id="winner-popup" class="justify-content-center align-item-center text-center">
+    <h2 id="winner-message"></h2>
+    <button onclick="closePopup()">Play Again</button>
+  </div>
+  
+
+<script src="script.js"></script>
+</body>
+</html>
