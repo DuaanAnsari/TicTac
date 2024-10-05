@@ -1,12 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>
+    /* style.css */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  #game-board {
+    margin-top: 20px;
+    background-color: #fff;
+    border: 2px solid #333;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .box {
+    height: 100px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .box:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .box.x::before {
+    content: 'X';
+    color: #f44336;
+    font-size: 3em;
+    transform: scale(0.5);
+    animation: pop 0.3s forwards;
+  }
+  
+  .box.o::before {
+    content: 'O';
+    color: #2196f3;
+    font-size: 3em;
+    transform: scale(0.5);
+    animation: pop 0.3s forwards;
+  }
+  
+  @keyframes pop {
+    to {
+      transform: scale(1);
+    }
+  }
+  
+  #turn-indicator {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+  
+  #reset-btn {
+    margin-top: 20px;
+  }
+  /* style.css */
+
+  
+  
+  #game-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+  }
+  
+  #winner-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1000;
+  }
+  
+  #winner-popup h2 {
+    margin-bottom: 20px;
+  }
+  
+  #winner-popup button {
+    background-color: #2196f3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  #winner-popup button:hover {
+    background-color: #1e88e5;
+  }
+  .popup {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    color: white;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 10;
+  }
+  
+  .play-again {
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+  }
+  .watermark {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    z-index: 100;
+}
+  
+  </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tic Tac</title>
   <link rel="icon" href="logo.png" type="image/x-icon">
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
@@ -45,6 +180,103 @@
   </div>
   
 
-<script src="script.js"></script>
+<script>
+  // script.js
+
+let currentPlayer = 'X';
+let board = ['', '', '', '', '', '', '', '', ''];
+let gameActive = true;
+
+const winningCombinations = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+
+const boxes = document.querySelectorAll('.box');
+const turnIndicator = document.getElementById('turn-indicator');
+const resetBtn = document.getElementById('reset-btn');
+const winnerPopup = document.getElementById('winner-popup');
+const winnerMessage = document.getElementById('winner-message');
+const gameContainer = document.getElementById('game-board');
+let winningLine = null;
+
+boxes.forEach(box => {
+  box.addEventListener('click', () => {
+    const index = box.getAttribute('data-index');
+    
+    if (board[index] === '' && gameActive) {
+      board[index] = currentPlayer;
+      box.classList.add(currentPlayer === 'X' ? 'x' : 'o');
+      
+      if (checkWin()) {
+        turnIndicator.textContent = `Player ${currentPlayer === 'X' ? 1 : 2} Wins!`;
+        gameActive = false;
+        showPopup(currentPlayer);
+        drawWinningLine();
+        return;
+      }
+      
+      if (board.every(cell => cell !== '')) {
+        turnIndicator.textContent = 'Draw!';
+        showPopup("None");
+        gameActive = false;
+        return;
+      }
+      
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      turnIndicator.textContent = `Player ${currentPlayer === 'X' ? 1 : 2}'s Turn (${currentPlayer})`;
+    }
+  });
+});
+
+resetBtn.addEventListener('click', resetGame);
+
+function checkWin() {
+  for (let combination of winningCombinations) {
+    const [a, b, c] = combination;
+    if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+      // Save the winning combination
+      winningLine = combination;
+      return true;
+    }
+  }
+  return false;
+}
+
+
+  
+
+function showPopup(winner) {
+  winnerMessage.textContent = winner === 'None' ? "It's a Draw!" : `Player ${winner === 'X' ? 1 : 2} Wins!`;
+  winnerPopup.style.display = 'block';
+}
+
+function closePopup() {
+  winnerPopup.style.display = 'none';
+  resetGame();
+}
+
+function resetGame() {
+  board = ['', '', '', '', '', '', '', '', ''];
+  gameActive = true;
+  currentPlayer = 'X';
+  turnIndicator.textContent = `Player 1's Turn (X)`;
+  boxes.forEach(box => {
+    box.classList.remove('x', 'o');
+  });
+  
+  // Remove winning line if any
+  const existingLine = document.querySelector('.winning-line');
+  if (existingLine) {
+    existingLine.remove();
+  }
+}
+</script>
 </body>
 </html>
